@@ -1,6 +1,5 @@
 package top.mahiro76.autoTotem;
 
-import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -100,22 +99,6 @@ public final class AutoTotemListener implements Listener {
 
         // 播放图腾使用音效与图腾粒子特效（模拟原版动画）
         player.getWorld().playSound(player.getLocation(), Sound.ITEM_TOTEM_USE, 1.0f, 1.0f);
-        player.getWorld().spawnParticle(totemParticle(), player.getLocation().add(0, 1, 0), 100, 0.5, 0.5, 0.5, 0.0);
-    }
-
-    /**
-     * 获取不死图腾粒子类型（版本兼容）。
-     * <p>1.20.5+ 将 {@code Particle.TOTEM} 改名为 {@code Particle.TOTEM_OF_UNDYING}，
-     * 因此这里用字符串在运行时解析：新版本优先，旧版本回退到旧名称。
-     *
-     * @return 图腾触发时播放的粒子
-     */
-    private Particle totemParticle() {
-        try {
-            return Particle.valueOf("TOTEM_OF_UNDYING");
-        } catch (IllegalArgumentException e) {
-            // 1.20.5 之前的版本仍使用 TOTEM 名称
-            return Particle.valueOf("TOTEM");
-        }
+        player.getWorld().spawnParticle(plugin.getVersionAdapter().getTotemParticle(), player.getLocation().add(0, 1, 0), 100, 0.5, 0.5, 0.5, 0.0);
     }
 }

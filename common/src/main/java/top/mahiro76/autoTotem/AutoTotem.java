@@ -1,5 +1,6 @@
 package top.mahiro76.autoTotem;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
@@ -13,8 +14,8 @@ import java.util.UUID;
 /**
  * AutoTotem 插件主类。
  * <p>
- * 负责插件的启动/关闭、玩家状态的存储（自动图腾开关、冷却时间、上次触发 tick），
- * 以及图腾的查找与消耗。
+ * 负责插件的启动/关闭、玩家状态的存储（自动图腾开关、冷却时间、上次触发 tick）、
+ * 图腾的查找与消耗，以及按服务器版本加载对应的 {@link VersionAdapter} 实现。
  */
 public final class AutoTotem extends JavaPlugin {
 
@@ -28,6 +29,9 @@ public final class AutoTotem extends JavaPlugin {
     /** 语言文件管理器（messages.yml） */
     private MessageManager messageManager;
 
+    /** 版本差异适配器（根据服务器版本从合并 jar 中反射加载） */
+    private VersionAdapter versionAdapter;
+
     /** 玩家未单独设置时的默认开关状态（来自 config.yml） */
     private boolean defaultEnabled = true;
     /** 玩家未单独设置时的默认冷却时间（tick，来自 config.yml） */
@@ -38,6 +42,7 @@ public final class AutoTotem extends JavaPlugin {
      * <ol>
      *   <li>保存默认配置（若插件目录下还没有 config.yml）</li>
      *   <li>加载配置</li>
+     *   <li>根据服务器版本加载版本适配器</li>
      *   <li>初始化语言文件管理器</li>
      *   <li>注册伤害监听器 {@link AutoTotemListener}</li>
      *   <li>注册 /autototem 命令的执行器与 Tab 补全</li>
@@ -47,6 +52,7 @@ public final class AutoTotem extends JavaPlugin {
     public void onEnable() {
         saveDefaultConfig();
         loadConfig();
+        versionAdapter = loadVersionAdapter();
         messageManager = new MessageManager(this);
         getServer().getPluginManager().registerEvents(new AutoTotemListener(this), this);
         AutoTotemCommand command = new AutoTotemCommand(this);
@@ -62,6 +68,50 @@ public final class AutoTotem extends JavaPlugin {
     @Override
     public void onDisable() {
         getLogger().info(messageManager == null ? "AutoTotem has been disabled" : messageManager.get("plugin-disabled"));
+    }
+
+    /** 获取当前服务器版本对应的版本适配器。 */
+    public VersionAdapter getVersionAdapter() {
+        return versionAdapter;
+    }
+
+    /**
+     * 根据服务器版本反射加载对应的 {@link VersionAdapter} 实现。
+     * <p>
+     * 所有版本适配器实现被合并进同一个 jar 中，运行时按服务器版本选择对应的类：
+     * <ul>
+     *   <li>1.20.x → {@code top.mahiro76.autoTotem.adapter.Adapter120}（Particle.TOTEM）</li>
+     *   <li>1.21.x → {@code top.mahiro76.autoTotem.adapter.Adapter121}（Particle.TOTEM_OF_UNDYING）</li>
+     *   <li>26.1.x → {@code top.mahiro76.autoTotem.adapter.Adapter261}（Particle.TOTEM_OF_UNDYING）</li>
+     *   <li>26.2.x → {@code top.mahiro76.autoTotem.adapter.Adapter262}（Particle.TOTEM_OF_UNDYING）</li>
+     * </ul>
+     * 未知版本时回退到 1.20 适配器。
+     *
+     * @return 对应版本的适配器实例
+     */
+    private VersionAdapter loadVersionAdapter() {
+        String mcVersion = Bukkit.getMinecraftVersion();
+        String adapterClass;
+        if (mcVersion.startsWith("1.20")) {
+            adapterClass = "top.mahiro76.autoTotem.adapter.Adapter120";
+        } else if (mcVersion.startsWith("1.21")) {
+            adapterClass = "top.mahiro76.autoTotem.adapter.Adapter121";
+        } else if (mcVersion.startsWith("26.1")) {
+            adapterClass = "top.mahiro76.autoTotem.adapter.Adapter261";
+        } else if (mcVersion.startsWith("26.2")) {
+            adapterClass = "top.mahiro76.autoTotem.adapter.Adapter262";
+        } else {
+            adapterClass = "top.mahiro76.autoTotem.adapter.Adapter120";
+        }
+        try {
+            @SuppressWarnings("unchecked")
+            Class<? extends VersionAdapter> clazz =
+                    (Class<? extends VersionAdapter>) Class.forName(adapterClass);
+            return clazz.getDeclaredConstructor().newInstance();
+        } catch (ReflectiveOperationException e) {
+            getLogger().warning("无法加载版本适配器 " + adapterClass + "，使用默认实现: " + e.getMessage());
+            return new DefaultVersionAdapter();
+        }
     }
 
     /**

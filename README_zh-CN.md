@@ -60,35 +60,37 @@ AutoTotem 会在运行时加载 `lang/` 目录下的语言文件——只需放�
 
 ## 🛠 构建
 
-项目采用多模块构建，为每个受支持的 Minecraft 版本线产出独立的 jar：
-
-| 模块 | 目标服务器 | 产物 |
-| --- | --- | --- |
-| `paper-1-20` | 1.20.1+ | `paper-1-20/build/libs/AutoTotem-1.20.jar` |
-| `paper-1-21` | 1.21.x | `paper-1-21/build/libs/AutoTotem-1.21.jar` |
-| `paper-26-1` | 26.1.x | `paper-26-1/build/libs/AutoTotem-26.1.jar` |
-| `paper-26-2` | 26.2.x | `paper-26-2/build/libs/AutoTotem-26.2.jar` |
-
-> 每个版本模块都针对各自的 Paper API 构建，并在 `plugin.yml` 中声明对应的 `api-version`，以正确处理新版本差异（如 1.20.5 起 `Particle.TOTEM` 更名为 `TOTEM_OF_UNDYING`）。
-
-各版本模块所需的 JDK：
-
-- `paper-1-20`：**JDK 17**
-- `paper-1-21`：**JDK 21**
-- `paper-26-1` / `paper-26-2`：**JDK 25**
-
-安装所需 JDK 后，在 `gradle.properties` 中通过 `org.gradle.java.installations.paths` 指定其路径（分号分隔，使用正斜杠）。
+项目采用多模块构建，最终将各版本实现合并为一个**通用 jar**：
 
 ```bash
-# 构建全部版本的 jar
+# 构建通用 jar
 ./gradlew build
 
-# 或只构建单个版本（例如 1.21）
-./gradlew :paper-1-21:build
+# 产物：build/libs/AutoTotem.jar
+```
 
-# 构建产物位于 <模块>/build/libs/
-# 本地启动 Paper 服务器进行测试（例如 1.21）
-./gradlew :paper-1-21:runServer
+### 工作原理
+
+- `common`——共享插件代码（主类、监听器、命令、消息），针对 Paper 1.20.1 API 用 **JDK 17** 编译
+- `paper-1-20` / `paper-1-21` / `paper-26-1` / `paper-26-2`——每个模块针对**各自的 Paper API**（JDK 17 / 21 / 25）编译一个小型版本适配器，处理版本 API 差异（如 1.20.5 起 `Particle.TOTEM` 更名为 `TOTEM_OF_UNDYING`）
+- 根项目通过 Shadow 插件将所有模块合并成一个 `AutoTotem.jar`
+
+运行时插件自动检测服务器版本，通过反射加载对应版本的适配器——**一个 jar 即可在 1.20.1 到 26.2 上运行**。
+
+构建所需 JDK：
+
+- `common` / `paper-1-20`：**JDK 17**
+- `paper-1-21`：**JDK 21**
+- `paper-26-1` / `paper-26-2` / 根项目：**JDK 25**
+
+安装所需 JDK 后，在 `gradle.properties` 中通过 `org.gradle.java.installations.paths` 指定其路径（逗号分隔，使用正斜杠）。
+
+```bash
+# 构建全部模块并合并为一个 jar
+./gradlew build
+
+# 本地启动 Paper 服务器进行测试（1.20.1）
+./gradlew runServer
 ```
 
 ## 📄 许可证
@@ -97,3 +99,16 @@ AutoTotem 会在运行时加载 `lang/` 目录下的语言文件——只需放�
 
 - **非商用**：商用须事先获得版权所有者的书面许可
 - **仅开源分发**：任何再分发或衍生作品必须以源码形式、并在相同许可证下发布
+
+
+## 免责声明 & 注意事项
+
+
+> [!CAUTION]
+> 本插件为**仅服务端插件**，完全由服务器管理员安装与管控。插件修改Minecraft原版机制，实现不死图腾自动消耗。**该自动化物品消耗逻辑可能造成游戏平衡性问题，在PVP、竞技、赛事服务器上有可能被认定为不公平优势。**
+>
+> 1. 本插件按现状提供，不提供任何担保。因服主安装、配置本插件所带来的玩家纠纷、规则问题、处罚封禁等一切后果，均由服务器管理员承担，开发者不承担相关责任。
+> 2. 服务器管理员在启用前，**有独立责任评估该功能是否符合服务器规则与公平游戏准则**；权限管控、冷却参数、特定游戏模式下是否关闭功能等配置决策全部由服主负责。
+> 3. 自动图腾消耗会对比依赖手动切换图腾的玩家产生游戏失衡，竞技/PVP场景请审慎决定是否开启。
+> 4. 第三方反作弊插件可能因本插件的服务端自动化行为产生误报，正式投入使用前务必完成兼容性测试。
+> 5. 使用本插件的全部风险由服务器运营方自行承担。

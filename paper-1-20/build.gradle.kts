@@ -1,11 +1,14 @@
 plugins {
-    java
-    alias(libs.plugins.shadow)
-    alias(libs.plugins.run.paper)
+    id("java-library")
+}
+
+repositories {
+    mavenCentral()
+    maven("https://repo.papermc.io/repository/maven-public/")
 }
 
 dependencies {
-    implementation(project(":common"))
+    compileOnly(project(":common"))
     compileOnly(libs.paperApi120)
 }
 
@@ -14,24 +17,7 @@ java {
 }
 
 tasks {
-    jar {
-        enabled = false
-    }
-
-    shadowJar {
-        archiveClassifier.set("")
-        archiveFileName.set("AutoTotem-1.20.jar")
-    }
-
-    processResources {
-        val props = mapOf("version" to project.version.toString())
-        filesMatching("plugin.yml") {
-            expand(props)
-        }
-    }
-
-    runServer {
-        minecraftVersion(libs.versions.minecraft120.get())
-        jvmArgs("-Xms2G", "-Xmx2G")
+    compileJava {
+        options.encoding = "UTF-8"
     }
 }

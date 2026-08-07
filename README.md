@@ -60,35 +60,37 @@ We welcome localization contributions! If you want to add or improve a translati
 
 ## 🛠 Building
 
-The project is a multi-module build that produces a separate jar for each supported Minecraft version line:
-
-| Module | Target server | Jar |
-| --- | --- | --- |
-| `paper-1-20` | 1.20.1+ | `paper-1-20/build/libs/AutoTotem-1.20.jar` |
-| `paper-1-21` | 1.21.x | `paper-1-21/build/libs/AutoTotem-1.21.jar` |
-| `paper-26-1` | 26.1.x | `paper-26-1/build/libs/AutoTotem-26.1.jar` |
-| `paper-26-2` | 26.2.x | `paper-26-2/build/libs/AutoTotem-26.2.jar` |
-
-> Each version module builds against its own Paper API and declares the matching `api-version` in `plugin.yml`, so newer versions (1.20.5+, where `Particle.TOTEM` was renamed to `TOTEM_OF_UNDYING`) are handled correctly.
-
-Build requirements (per version module):
-
-- `paper-1-20`: **JDK 17**
-- `paper-1-21`: **JDK 21**
-- `paper-26-1` / `paper-26-2`: **JDK 25**
-
-Install the required JDKs and point Gradle at them via `org.gradle.java.installations.paths` in `gradle.properties` (semicolon-separated, forward slashes).
+The project is a multi-module build that merges all version-specific implementations into **a single universal jar**:
 
 ```bash
-# Build all version jars
+# Build the universal jar
 ./gradlew build
 
-# Or build a single version (e.g. 1.21)
-./gradlew :paper-1-21:build
+# Output: build/libs/AutoTotem.jar
+```
 
-# Build output is located in <module>/build/libs/
-# Start a local Paper server for testing (e.g. 1.21)
-./gradlew :paper-1-21:runServer
+### How it works
+
+- `common` — shared plugin code (main class, listener, commands, messages), compiled against Paper 1.20.1 API with **JDK 17**
+- `paper-1-20` / `paper-1-21` / `paper-26-1` / `paper-26-2` — each module compiles a small version adapter against its **own Paper API** (JDK 17 / 21 / 25), handling API differences like `Particle.TOTEM` (renamed to `TOTEM_OF_UNDYING` in 1.20.5)
+- The root project merges all modules into one `AutoTotem.jar` via the Shadow plugin
+
+At runtime, the plugin detects the server version and loads the matching adapter class via reflection — so **a single jar works on 1.20.1 through 26.2**.
+
+Build requirements:
+
+- `common` / `paper-1-20`: **JDK 17**
+- `paper-1-21`: **JDK 21**
+- `paper-26-1` / `paper-26-2` / root: **JDK 25**
+
+Install the required JDKs and point Gradle at them via `org.gradle.java.installations.paths` in `gradle.properties` (comma-separated, forward slashes).
+
+```bash
+# Build all modules and merge into one jar
+./gradlew build
+
+# Start a local Paper server for testing (1.20.1)
+./gradlew runServer
 ```
 
 ## 📄 License
@@ -97,3 +99,14 @@ This project is licensed under the [MIT License with Non-Commercial and No Close
 
 - **Non-Commercial**: Commercial use requires prior written permission from the copyright holder
 - **Source-Code Only**: Any redistribution or derivative works must be distributed in source code form under the same license
+
+
+## Disclaimer & Precautions
+
+>[!CAUTION]
+> This is a **server‑side only plugin**, installed and controlled entirely by server administrators. It modifies vanilla Minecraft mechanics by automatically consuming Totems of Undying. **Automated item‑consumption logic may create gameplay imbalances and may be considered an unfair advantage, especially on PvP, competitive or tournament servers.**
+> 1. This plugin is provided **as‑is** without any form of warranty. The developer assumes no liability for player disputes, rule‑related issues, sanctions, bans or any other consequences resulting from server administrators installing or configuring this plugin.
+> 2. It is the **server administrator’s sole responsibility** to assess whether this feature aligns with server rules and fair‑play expectations before enabling it. Administrators are responsible for making configuration decisions such as permission restrictions, cooldown values and whether to disable the feature for specific game modes.
+> 3. Automated totem consumption may create imbalance against players who rely on manual totem usage. For competitive or PvP scenarios, administrators should carefully consider whether to enable this functionality.
+> 4. Third‑party anti‑cheat plugins may trigger false positives caused by this plugin’s server‑side automatic behaviour. Compatibility testing is strongly recommended before production deployment.
+> 5. This plugin shall only be operated at the server operator’s own risk.
