@@ -60,7 +60,14 @@ public final class AutoTotemCommand implements CommandExecutor, TabCompleter {
         switch (args[0].toLowerCase()) {
             case "enabled" -> handleEnabled(player, args);
             case "cooldowntime", "cd" -> handleCooldown(player, args);
-            case "reload" -> handleReload(player);
+            case "setdefaultcooldown", "sdc" -> handleSetDefaultCooldown(player, args);
+            case "reload" -> {
+                if (!player.hasPermission("autototem.reload")) {
+                    plugin.getMessageManager().send(player, "reload-no-permission");
+                    return true;
+                }
+                handleReload(player);
+            }
             default -> sendHelp(player);
         }
         return true;
@@ -119,11 +126,54 @@ public final class AutoTotemCommand implements CommandExecutor, TabCompleter {
                 plugin.getMessageManager().send(player, "cooldown-negative");
                 return;
             }
+            // 玩家设置的冷却时间不能低于服务器默认值
+            int minTicks = plugin.getDefaultCooldownTicks();
+            if (ticks < minTicks) {
+                plugin.getMessageManager().send(player, "cooldown-below-default",
+                        String.valueOf(minTicks), formatSeconds(minTicks));
+                return;
+            }
             plugin.setCooldownTicks(player, ticks);
             plugin.getMessageManager().send(player, "cooldown-set",
                     String.valueOf(ticks), formatSeconds(ticks));
         } catch (NumberFormatException e) {
             // 参数不是整数时给出提示
+            plugin.getMessageManager().send(player, "cooldown-invalid");
+        }
+    }
+
+    /**
+     * 处理 {@code setdefaultcooldown} 子命令：查看/设置服务器默认冷却时间。
+     * <p>需要 {@code autototem.admin} 权限（默认仅 OP）。无参数时显示当前默认冷却；
+     * 带数字参数时设置默认冷却并写入 config.yml。
+     *
+     * @param player 执行命令的玩家
+     * @param args   完整命令参数
+     */
+    private void handleSetDefaultCooldown(Player player, String[] args) {
+        // 仅管理员可用
+        if (!player.hasPermission("autototem.admin")) {
+            plugin.getMessageManager().send(player, "reload-no-permission");
+            return;
+        }
+        // 无参数：显示当前服务器默认冷却
+        if (args.length < 2) {
+            int current = plugin.getDefaultCooldownTicks();
+            plugin.getMessageManager().send(player, "default-cooldown-query",
+                    String.valueOf(current), formatSeconds(current));
+            return;
+        }
+        // 有参数：解析并设置默认冷却时间
+        try {
+            int ticks = Integer.parseInt(args[1]);
+            if (ticks < 0) {
+                plugin.getMessageManager().send(player, "cooldown-negative");
+                return;
+            }
+            plugin.setDefaultCooldownTicks(ticks);
+            plugin.getMessageManager().send(player, "default-cooldown-set",
+                    String.valueOf(ticks), formatSeconds(ticks));
+        } catch (NumberFormatException e) {
             plugin.getMessageManager().send(player, "cooldown-invalid");
         }
     }
@@ -149,8 +199,11 @@ public final class AutoTotemCommand implements CommandExecutor, TabCompleter {
         messages.send(player, "help-header");
         messages.send(player, "help-enabled");
         messages.send(player, "help-cooldown");
-        messages.send(player, "help-reload");
         messages.send(player, "help-help");
+        if (player.hasPermission("autototem.admin")){
+            messages.send(player, "help-setdefault");
+            messages.send(player, "help-reload");
+        }
     }
 
     /**
@@ -189,8 +242,11 @@ public final class AutoTotemCommand implements CommandExecutor, TabCompleter {
             // 第一级：列出所有子命令
             completions.add("enabled");
             completions.add("cooldowntime");
-            completions.add("reload");
-            completions.add("help");
+            // 管理员专属命令仅在拥有对应权限时显示
+            if (sender.hasPermission("autototem.admin")) {
+                completions.add("setdefaultcooldown");
+                completions.add("reload");
+            }
         } else if (args.length == 2) {
             // 第二级：根据子命令给出对应的参数候选
             switch (args[0].toLowerCase()) {
@@ -198,7 +254,7 @@ public final class AutoTotemCommand implements CommandExecutor, TabCompleter {
                     completions.add("true");
                     completions.add("false");
                 }
-                case "cooldowntime", "cd" -> completions.add("<tick>");
+                case "cooldowntime", "cd", "setdefaultcooldown", "sdc" -> completions.add("<tick>");
             }
         }
         return completions;

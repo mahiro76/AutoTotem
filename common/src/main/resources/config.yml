@@ -1,7 +1,9 @@
-# AutoTotem 插件配置
-# 玩家默认是否启用自动图腾
+# AutoTotem Config
+# Whether players enable automatic totems by default
 default-enabled: true
-# 默认触发冷却时间（单位：tick，20 tick = 1 秒）
+# Default trigger cooling time (unit: tick, 20 tick = 1 second)
 default-cooldown-ticks: 0
-# 默认语言（当玩家客户端语言不在 lang/ 目录时使用，例如 en-US、zh-CN）
+# Whether to trigger the automatic totem when being attacked by a player causing fatal damage (PVP scenario)
+pvp-enabled: true
+# Default language (used when the player client language is not in the lang/ directory, such as en-US, zh-CN)
 default-locale: en-US

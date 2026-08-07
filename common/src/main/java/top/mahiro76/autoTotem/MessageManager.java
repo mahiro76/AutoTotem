@@ -106,7 +106,7 @@ public final class MessageManager {
                 }
             }
         } catch (IOException e) {
-            plugin.getLogger().warning("无法加载语言文件: " + file.getName() + " - " + e.getMessage());
+            plugin.getLogger().warning("Unable To Load Language File" + file.getName() + " - " + e.getMessage());
         }
         return messages;
     }

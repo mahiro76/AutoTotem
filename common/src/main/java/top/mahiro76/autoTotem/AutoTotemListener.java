@@ -1,10 +1,12 @@
 package top.mahiro76.autoTotem;
 
+import org.bukkit.EntityEffect;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -62,6 +64,13 @@ public final class AutoTotemListener implements Listener {
         double health = player.getHealth() + player.getAbsorptionAmount();
         if (finalDamage < health) return;
 
+        // 【PVP 判定】若配置关闭 PVP 触发，则被玩家攻击造成的致命伤害不触发自动图腾
+        if (!plugin.isPvpEnabled()
+                && event instanceof EntityDamageByEntityEvent entityEvent
+                && entityEvent.getDamager() instanceof Player) {
+            return;
+        }
+
         // 背包中没有图腾则交给原版逻辑（不主动干预）
         if (!plugin.hasTotem(player)) return;
 
@@ -99,6 +108,8 @@ public final class AutoTotemListener implements Listener {
 
         // 播放图腾使用音效与图腾粒子特效（模拟原版动画）
         player.getWorld().playSound(player.getLocation(), Sound.ITEM_TOTEM_USE, 1.0f, 1.0f);
+        // 发送图腾复活实体效果，触发客户端原版动画（绿色粒子升腾 + 全屏粒子幕）
+        player.playEffect(EntityEffect.TOTEM_RESURRECT);
         player.getWorld().spawnParticle(plugin.getVersionAdapter().getTotemParticle(), player.getLocation().add(0, 1, 0), 100, 0.5, 0.5, 0.5, 0.0);
     }
 }

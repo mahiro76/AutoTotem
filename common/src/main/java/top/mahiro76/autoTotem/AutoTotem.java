@@ -36,6 +36,8 @@ public final class AutoTotem extends JavaPlugin {
     private boolean defaultEnabled = true;
     /** 玩家未单独设置时的默认冷却时间（tick，来自 config.yml） */
     private int defaultCooldownTicks = 0;
+    /** 是否在 PVP（被玩家攻击致伤）时触发自动图腾（来自 config.yml） */
+    private boolean pvpEnabled = true;
 
     /**
      * 插件启动时调用。
@@ -61,7 +63,7 @@ public final class AutoTotem extends JavaPlugin {
             autoTotemCommand.setExecutor(command);
             autoTotemCommand.setTabCompleter(command);
         }
-        getLogger().info(messageManager.get("plugin-enabled"));
+        getLogger().info(messageManager.get("plugin-enabled") + " (v" + getDescription().getVersion() + ", server " + Bukkit.getMinecraftVersion() + ", adapter " + versionAdapter.getClass().getSimpleName() + ")");
     }
 
     /** 插件关闭时调用，仅输出日志提示。 */
@@ -109,7 +111,7 @@ public final class AutoTotem extends JavaPlugin {
                     (Class<? extends VersionAdapter>) Class.forName(adapterClass);
             return clazz.getDeclaredConstructor().newInstance();
         } catch (ReflectiveOperationException e) {
-            getLogger().warning("无法加载版本适配器 " + adapterClass + "，使用默认实现: " + e.getMessage());
+            getLogger().warning("Unable to load version adapter" + adapterClass + ". Using the default implementation:" + e.getMessage());
             return new DefaultVersionAdapter();
         }
     }
@@ -122,6 +124,12 @@ public final class AutoTotem extends JavaPlugin {
         reloadConfig();
         defaultEnabled = getConfig().getBoolean("default-enabled", true);
         defaultCooldownTicks = Math.max(0, getConfig().getInt("default-cooldown-ticks", 0));
+        pvpEnabled = getConfig().getBoolean("pvp-enabled", true);
+    }
+
+    /** 是否在 PVP（被玩家攻击致伤）时触发自动图腾。 */
+    public boolean isPvpEnabled() {
+        return pvpEnabled;
     }
 
     /** 获取语言文件管理器。 */
@@ -160,13 +168,30 @@ public final class AutoTotem extends JavaPlugin {
     }
 
     /**
-     * 设置指定玩家的触发冷却时间（对负数做非负保护）。
+     * 设置指定玩家的触发冷却时间。
+     * <p>玩家设置的冷却时间不能低于服务器默认冷却时间（config.yml 的 default-cooldown-ticks）。
      *
      * @param player 目标玩家
      * @param ticks  冷却 tick 数（20 tick = 1 秒）
      */
     public void setCooldownTicks(Player player, int ticks) {
-        cooldownTicks.put(player.getUniqueId(), Math.max(0, ticks));
+        cooldownTicks.put(player.getUniqueId(), Math.max(defaultCooldownTicks, ticks));
+    }
+
+    /** 获取服务器默认触发冷却时间（config.yml 的 default-cooldown-ticks）。 */
+    public int getDefaultCooldownTicks() {
+        return defaultCooldownTicks;
+    }
+
+    /**
+     * 设置服务器默认触发冷却时间并保存到 config.yml。
+     *
+     * @param ticks 新的默认冷却 tick 数（负数会被钳制为 0）
+     */
+    public void setDefaultCooldownTicks(int ticks) {
+        defaultCooldownTicks = Math.max(0, ticks);
+        getConfig().set("default-cooldown-ticks", defaultCooldownTicks);
+        saveConfig();
     }
 
     /**

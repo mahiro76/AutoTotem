@@ -3,17 +3,17 @@
 # Color codes use §
 
 # Plugin enable/disable logs
-plugin-enabled=§aAutoTotem has been enabled
-plugin-disabled=§cAutoTotem has been disabled
+plugin-enabled=AutoTotem has been enabled. Version:
+plugin-disabled=AutoTotem has been disabled. Version:
 
 # General
-command-only-player=§cThis command can only be executed by players
+command-only-player=This command can only be executed by players
 
 # enabled subcommand
 enabled-query=§eAutoTotem status: %s
 enabled-status-on=§aON
 enabled-status-off=§cOFF
-enabled-usage=§7Use /autototem enabled true|false to toggle
+enabled-usage=§7Use /autototem enabled true | false to toggle
 enabled-true=§aAutoTotem has been enabled
 enabled-false=§cAutoTotem has been disabled
 enabled-invalid=§cInvalid argument, please use true or false
@@ -23,13 +23,20 @@ cooldown-query=§eCurrent cooldown: §a%1$s tick§e (%2$s seconds)
 cooldown-negative=§cCooldown cannot be negative
 cooldown-set=§aCooldown set to §e%1$s tick§a (%2$s seconds)
 cooldown-invalid=§cInvalid argument, please enter an integer (ticks)
+cooldown-below-default=§cCooldown cannot be lower than the server default §e%1$s tick§c (%2$s seconds)
+
+# setdefaultcooldown subcommand
+default-cooldown-query=§eServer default cooldown: §a%1$s tick§e (%2$s seconds)
+default-cooldown-set=§aServer default cooldown set to §e%1$s tick§a (%2$s seconds)
 
 # reload subcommand
 reload-success=§aConfiguration reloaded
+reload-no-permission=§cYou do not have permission to run this command (OP required)
 
 # Help
 help-header=§6========== AutoTotem Help ==========
-help-enabled=§e/autototem enabled true|false §7- Toggle auto totem
+help-enabled=§e/autototem enabled true | false §7- Toggle auto totem
 help-cooldown=§e/autototem cooldowntime [tick] §7- View/set trigger cooldown (20 ticks = 1 second)
+help-setdefault=§e/autototem setdefaultcooldown [tick] §7- View/set server default cooldown (admin)
 help-reload=§e/autototem reload §7- Reload configuration file
 help-help=§e/autototem help §7- Show help

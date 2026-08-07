@@ -4,8 +4,7 @@ plugins {
     alias(libs.plugins.run.paper)
 }
 
-group = "top.mahiro76"
-version = "1.0-SNAPSHOT"
+// group 和 version 从 gradle.properties 读取（Gradle 自动加载为项目属性）
 
 repositories {
     mavenCentral()
@@ -34,8 +33,10 @@ tasks {
     }
 
     shadowJar {
+        archiveBaseName.set("AutoTotem-Plugin-${providers.gradleProperty("serverPlatform").get()}")
         archiveClassifier.set("")
-        archiveFileName.set("AutoTotem.jar")
+        // 命名 AutoTotem-<serverPlatform>-<version>.jar
+        // serverPlatform 在 gradle.properties 中定义，改服务端适配只需改那一处
         // 版本适配器实现由运行时按需反射加载，不进行类冲突合并
         exclude("module-info.class")
     }

@@ -10,8 +10,17 @@ commands:
     description: AutoTotem 主命令
     usage: /autototem <enabled|cooldowntime|help>
     permission: autototem.use
+    aliases: [at]
 
 permissions:
   autototem.use:
     description: Allow to use AutoTotem command.
     default: true
+
+  autototem.admin:
+    description: Allow to use AutoTotem admin command.
+    default: op
+
+  autototem.reload:
+    description: Allow to reload AutoTotem config.
+    default: op
