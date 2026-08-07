@@ -13,5 +13,5 @@ commands:
 
 permissions:
   autototem.use:
-    description: 允许使用 AutoTotem 命令
+    description: Allow to use AutoTotem command.
     default: true
