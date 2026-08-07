@@ -1,9 +1,14 @@
 # AutoTotem Config
-# Whether players enable automatic totems by default
+# Whether players enable automatic totems by default.
+# Default: true
 default-enabled: true
 # Default trigger cooling time (unit: tick, 20 tick = 1 second)
+# Setting it to 0 means there is no cooling time, which means it is disabled.
+# Default: 0
 default-cooldown-ticks: 0
 # Whether to trigger the automatic totem when being attacked by a player causing fatal damage (PVP scenario)
+# Default: true
 pvp-enabled: true
 # Default language (used when the player client language is not in the lang/ directory, such as en-US, zh-CN)
+# Default: en-US
 default-locale: en-US

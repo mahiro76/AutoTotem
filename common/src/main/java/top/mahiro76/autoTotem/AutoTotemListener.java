@@ -47,24 +47,24 @@ public final class AutoTotemListener implements Listener {
         // 事件已被其他插件取消，或玩家已死亡，跳过
         if (event.isCancelled() || player.isDead()) return;
 
-        // 【死亡判定】掉落虚空不触发自动图腾
+        // 死亡判定 掉落虚空不触发自动图腾
         if (event.getCause() == EntityDamageEvent.DamageCause.VOID) return;
 
         // 玩家未开启自动图腾，跳过
         if (!plugin.isEnabled(player)) return;
 
-        // 【冷却判断】距上次触发不足冷却时间则不触发
+        // 冷却判断 距上次触发不足冷却时间则不触发
         long currentTick = player.getWorld().getFullTime();
         long lastTrigger = plugin.getLastTriggerTick(player);
         int cooldown = plugin.getCooldownTicks(player);
         if (cooldown > 0 && lastTrigger != Long.MIN_VALUE && currentTick - lastTrigger < cooldown) return;
 
-        // 【致命伤害判定】只有伤害足以致死时才触发（生命 + 伤害吸收 < 最终伤害）
+        // 致命伤害判定 只有伤害足以致死时才触发（生命 + 伤害吸收 < 最终伤害）
         double finalDamage = event.getFinalDamage();
         double health = player.getHealth() + player.getAbsorptionAmount();
         if (finalDamage < health) return;
 
-        // 【PVP 判定】若配置关闭 PVP 触发，则被玩家攻击造成的致命伤害不触发自动图腾
+        // PVP 判定 若配置关闭 PVP 触发，则被玩家攻击造成的致命伤害不触发自动图腾
         if (!plugin.isPvpEnabled()
                 && event instanceof EntityDamageByEntityEvent entityEvent
                 && entityEvent.getDamager() instanceof Player) {
@@ -74,7 +74,7 @@ public final class AutoTotemListener implements Listener {
         // 背包中没有图腾则交给原版逻辑（不主动干预）
         if (!plugin.hasTotem(player)) return;
 
-        // 【消耗图腾并取消伤害】消耗失败（如并发竞态）则放弃触发
+        // 消耗图腾并取消伤害 消耗失败（如并发竞态）则放弃触发
         if (!plugin.consumeTotem(player)) return;
         event.setCancelled(true);
 
