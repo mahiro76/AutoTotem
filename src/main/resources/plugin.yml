@@ -1,0 +1,17 @@
+name: AutoTotem
+version: '${version}'
+
+main: top.mahiro76.autoTotem.AutoTotem
+api-version: '1.20'
+load: POSTWORLD
+
+commands:
+  autototem:
+    description: AutoTotem 主命令
+    usage: /autototem <enabled|cooldowntime|help>
+    permission: autototem.use
+
+permissions:
+  autototem.use:
+    description: 允许使用 AutoTotem 命令
+    default: true

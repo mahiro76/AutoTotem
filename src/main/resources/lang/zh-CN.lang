@@ -1,0 +1,35 @@
+# AutoTotem 语言文件 - 简体中文 (zh-CN)
+# 占位符：%s（按顺序）或 %1$s、%2$s（按位置）
+# 颜色代码使用 §
+
+# 插件启停日志
+plugin-enabled=§a自动图腾插件 已启用
+plugin-disabled=§c自动图腾插件 已禁用
+
+# 通用
+command-only-player=§c该命令只能由玩家执行
+
+# enabled 子命令
+enabled-query=§e当前自动图腾状态: %s
+enabled-status-on=§a开启
+enabled-status-off=§c关闭
+enabled-usage=§7使用 /autototem enabled true|false 来切换
+enabled-true=§a自动图腾已开启
+enabled-false=§c自动图腾已关闭
+enabled-invalid=§c参数无效，请输入 true 或 false
+
+# cooldowntime 子命令
+cooldown-query=§e当前冷却时间: §a%1$s tick§e（%2$s 秒）
+cooldown-negative=§c冷却时间不能为负数
+cooldown-set=§a冷却时间已设置为 §e%1$s tick§a（%2$s 秒）
+cooldown-invalid=§c参数无效，请输入一个整数（tick 数）
+
+# reload 子命令
+reload-success=§a配置已重新加载
+
+# 帮助
+help-header=§6========== 自动图腾 帮助 ==========
+help-enabled=§e/autototem enabled true|false §7- 开启/关闭自动图腾
+help-cooldown=§e/autototem cooldowntime [tick] §7- 查看/设置触发冷却时间（20 tick = 1 秒）
+help-reload=§e/autototem reload §7- 重新加载配置文件
+help-help=§e/autototem help §7- 显示帮助

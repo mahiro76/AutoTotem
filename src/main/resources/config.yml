@@ -1,0 +1,7 @@
+# AutoTotem 插件配置
+# 玩家默认是否启用自动图腾
+default-enabled: true
+# 默认触发冷却时间（单位：tick，20 tick = 1 秒）
+default-cooldown-ticks: 0
+# 默认语言（当玩家客户端语言不在 lang/ 目录时使用，例如 en-US、zh-CN）
+default-locale: en-US
