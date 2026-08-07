@@ -4,7 +4,7 @@
 
 **🌐 语言 / Language:** [English](README.md) · [简体中文](README_zh-CN.md)
 
-一个基于 **Paper** 的 Minecraft 服务器插件，可以在玩家受到致命伤害时自动消耗背包中的不死图腾，避免死亡。
+一个基于 **Paper** 的 Minecraft 服务器插件，可以在玩家受到致命伤害时自动消耗背包中的不死图腾，避免死亡。单个 jar 即可适配 Minecraft **1.20.1 – 26.2**。
 
 ## ✨ 功能特性
 
@@ -14,8 +14,9 @@
 - **独立玩家设置**：每个玩家的开关与冷却时间独立记忆
 - **触发冷却**：可设置冷却时间，冷却期间不重复触发
 - **致命伤害判定**：仅在伤害足以致死时触发，虚空掉落不会触发，计算包含伤害吸收值
+- **PVP 触发开关**：可配置关闭由玩家攻击造成的致命伤害触发（`pvp-enabled` 配置项）
 - **多语言**：内置简体中文（zh-CN）与英文（en-US），按玩家客户端语言自动切换
-- **Tab 补全**：命令完整支持 Tab 补全
+- **Tab 补全**：命令完整支持 Tab 补全，并按权限过滤管理员专属子命令
 
 ## 📥 安装
 
@@ -29,15 +30,20 @@
 | 命令 | 说明 | 权限 |
 | --- | --- | --- |
 | `/autototem enabled true\|false` | 开启/关闭自动图腾（无参数时查询当前状态） | `autototem.use` |
-| `/autototem cooldowntime [tick]` | 查看/设置触发冷却时间（20 tick = 1 秒） | `autototem.use` |
-| `/autototem reload` | 重新加载配置文件 | `autototem.use` |
+| `/autototem cooldowntime [tick]` | 查看/设置触发冷却时间（20 tick = 1 秒），不能低于服务器默认值 | `autototem.use` |
+| `/autototem setdefaultcooldown [tick]` | 查看/设置服务器默认冷却时间（保存至 config.yml） | `autototem.admin` |
+| `/autototem reload` | 重新加载配置文件 | `autototem.reload` |
 | `/autototem help` | 显示帮助信息 | `autototem.use` |
+
+别名：`/autototem` → `/at`；`/autototem cooldowntime` → `/at cd`；`/autototem setdefaultcooldown` → `/at sdc`
 
 ## 🔑 权限
 
 | 权限 | 默认值 | 说明 |
 | --- | --- | --- |
 | `autototem.use` | `true` | 允许使用 `/autototem` 命令 |
+| `autototem.reload` | `op` | 允许使用 `/autototem reload` 重新加载配置 |
+| `autototem.admin` | `op` | 允许使用 `/autototem setdefaultcooldown` 修改服务器默认冷却 |
 
 ## ⚙️ 配置
 
@@ -48,6 +54,8 @@
 default-enabled: true
 # 默认触发冷却时间（单位：tick，20 tick = 1 秒）
 default-cooldown-ticks: 0
+# 是否在被玩家攻击造成的致命伤害时触发自动图腾（PVP 场景）
+pvp-enabled: true
 # 默认语言（当玩家客户端语言不在 lang/ 目录时使用，例如 en-US、zh-CN）
 default-locale: en-US
 ```
@@ -66,14 +74,15 @@ AutoTotem 会在运行时加载 `lang/` 目录下的语言文件——只需放�
 # 构建通用 jar
 ./gradlew build
 
-# 产物：build/libs/AutoTotem.jar
+# 产物：build/libs/AutoTotem-<平台>-<版本>.jar
+# 例如 AutoTotem-Plugin-Paper-1.1.2.jar
 ```
 
 ### 工作原理
 
 - `common`——共享插件代码（主类、监听器、命令、消息），针对 Paper 1.20.1 API 用 **JDK 17** 编译
 - `paper-1-20` / `paper-1-21` / `paper-26-1` / `paper-26-2`——每个模块针对**各自的 Paper API**（JDK 17 / 21 / 25）编译一个小型版本适配器，处理版本 API 差异（如 1.20.5 起 `Particle.TOTEM` 更名为 `TOTEM_OF_UNDYING`）
-- 根项目通过 Shadow 插件将所有模块合并成一个 `AutoTotem.jar`
+- 根项目通过 Shadow 插件将所有模块合并成一个 jar；jar 名称由 `gradle.properties` 中的 `version` 与 `serverPlatform` 决定
 
 运行时插件自动检测服务器版本，通过反射加载对应版本的适配器——**一个 jar 即可在 1.20.1 到 26.2 上运行**。
 
