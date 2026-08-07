@@ -19,3 +19,7 @@ hs_err_pid*
 
 # Common working directory
 run
+
+# Local-only documentation (for Modrinth publishing, not pushed to GitHub)
+CHANGELOG.md
+MODRINTH.md
