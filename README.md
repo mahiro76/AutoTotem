@@ -4,7 +4,7 @@
 
 **🌐 Language / 语言:** [English](README.md) · [简体中文](README_zh-CN.md)
 
-A **Paper** Minecraft server plugin that automatically consumes totems of undying from your inventory when you take a fatal hit, saving you from death.
+A **Paper** Minecraft server plugin that automatically consumes totems of undying from your inventory when you take a fatal hit, saving you from death. Works on a single jar across Minecraft **1.20.1 – 26.2**.
 
 ## ✨ Features
 
@@ -14,8 +14,9 @@ A **Paper** Minecraft server plugin that automatically consumes totems of undyin
 - **Per-player settings**: Toggle state and cooldown are stored per player
 - **Trigger cooldown**: Set a cooldown to prevent repeated triggers
 - **Fatal damage check**: Only triggers when the damage would be lethal; void damage never triggers; absorption is included in the calculation
+- **PVP toggle**: Optionally disable auto-totem for player-caused lethal damage (`pvp-enabled` config)
 - **Multi-language**: Built-in Simplified Chinese (zh-CN) and English (en-US), auto-selected based on the player's client language
-- **Tab completion**: Full tab-completion support for all commands
+- **Tab completion**: Full tab-completion support for all commands, filtered by permission
 
 ## 📥 Installation
 
@@ -29,15 +30,20 @@ A **Paper** Minecraft server plugin that automatically consumes totems of undyin
 | Command | Description | Permission |
 | --- | --- | --- |
 | `/autototem enabled true\|false` | Enable/disable auto totem (no argument shows current status) | `autototem.use` |
-| `/autototem cooldowntime [tick]` | View/set trigger cooldown (20 ticks = 1 second) | `autototem.use` |
-| `/autototem reload` | Reload the configuration file | `autototem.use` |
+| `/autototem cooldowntime [tick]` | View/set trigger cooldown (20 ticks = 1 second); cannot be set below the server default | `autototem.use` |
+| `/autototem setdefaultcooldown [tick]` | View/set server default cooldown (saved to config.yml) | `autototem.admin` |
+| `/autototem reload` | Reload the configuration file | `autototem.reload` |
 | `/autototem help` | Show help information | `autototem.use` |
+
+Aliases: `/autototem` → `/at`; `/autototem cooldowntime` → `/at cd`; `/autototem setdefaultcooldown` → `/at sdc`
 
 ## 🔑 Permissions
 
 | Permission | Default | Description |
 | --- | --- | --- |
 | `autototem.use` | `true` | Allows using the `/autototem` command |
+| `autototem.reload` | `op` | Allows reloading the configuration with `/autototem reload` |
+| `autototem.admin` | `op` | Allows changing the server default cooldown with `/autototem setdefaultcooldown` |
 
 ## ⚙️ Configuration
 
@@ -48,6 +54,8 @@ Config file location: `plugins/AutoTotem/config.yml`
 default-enabled: true
 # Default trigger cooldown (in ticks, 20 ticks = 1 second)
 default-cooldown-ticks: 0
+# Whether to trigger auto totem on lethal damage caused by another player (PvP)
+pvp-enabled: true
 # Default locale (used when the player's client language is not in the lang/ folder, e.g. en-US, zh-CN)
 default-locale: en-US
 ```
@@ -66,14 +74,15 @@ The project is a multi-module build that merges all version-specific implementat
 # Build the universal jar
 ./gradlew build
 
-# Output: build/libs/AutoTotem.jar
+# Output: build/libs/AutoTotem-<platform>-<version>.jar
+# e.g. AutoTotem-Plugin-Paper-1.1.2.jar
 ```
 
 ### How it works
 
 - `common` — shared plugin code (main class, listener, commands, messages), compiled against Paper 1.20.1 API with **JDK 17**
 - `paper-1-20` / `paper-1-21` / `paper-26-1` / `paper-26-2` — each module compiles a small version adapter against its **own Paper API** (JDK 17 / 21 / 25), handling API differences like `Particle.TOTEM` (renamed to `TOTEM_OF_UNDYING` in 1.20.5)
-- The root project merges all modules into one `AutoTotem.jar` via the Shadow plugin
+- The root project merges all modules into one jar via the Shadow plugin; the jar name is driven by `gradle.properties` (`version` and `serverPlatform`)
 
 At runtime, the plugin detects the server version and loads the matching adapter class via reflection — so **a single jar works on 1.20.1 through 26.2**.
 
