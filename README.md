@@ -19,7 +19,7 @@ A **Paper** Minecraft server plugin that automatically consumes totems of undyin
 
 ## 📥 Installation
 
-1. Download the latest `AutoTotem-*.jar`
+1. Download the latest `AutoTotem-*.jar` from [modrinth](https://modrinth.com/plugin/autototem-plugin)
 2. Drop the jar into the server's `plugins/` folder
 3. Restart the server (or load it via a plugin manager)
 4. A config file will be generated in `plugins/AutoTotem/` on first startup
