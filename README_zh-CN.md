@@ -60,15 +60,35 @@ AutoTotem 会在运行时加载 `lang/` 目录下的语言文件——只需放�
 
 ## 🛠 构建
 
-需要 **JDK 17+**（推荐 JDK 21）。
+项目采用多模块构建，为每个受支持的 Minecraft 版本线产出独立的 jar：
+
+| 模块 | 目标服务器 | 产物 |
+| --- | --- | --- |
+| `paper-1-20` | 1.20.1+ | `paper-1-20/build/libs/AutoTotem-1.20.jar` |
+| `paper-1-21` | 1.21.x | `paper-1-21/build/libs/AutoTotem-1.21.jar` |
+| `paper-26-1` | 26.1.x | `paper-26-1/build/libs/AutoTotem-26.1.jar` |
+| `paper-26-2` | 26.2.x | `paper-26-2/build/libs/AutoTotem-26.2.jar` |
+
+> 每个版本模块都针对各自的 Paper API 构建，并在 `plugin.yml` 中声明对应的 `api-version`，以正确处理新版本差异（如 1.20.5 起 `Particle.TOTEM` 更名为 `TOTEM_OF_UNDYING`）。
+
+各版本模块所需的 JDK：
+
+- `paper-1-20`：**JDK 17**
+- `paper-1-21`：**JDK 21**
+- `paper-26-1` / `paper-26-2`：**JDK 25**
+
+安装所需 JDK 后，在 `gradle.properties` 中通过 `org.gradle.java.installations.paths` 指定其路径（分号分隔，使用正斜杠）。
 
 ```bash
-# 打包插件
+# 构建全部版本的 jar
 ./gradlew build
 
-# 构建产物位于 build/libs/
-# 本地启动 Paper 服务器进行测试
-./gradlew runServer
+# 或只构建单个版本（例如 1.21）
+./gradlew :paper-1-21:build
+
+# 构建产物位于 <模块>/build/libs/
+# 本地启动 Paper 服务器进行测试（例如 1.21）
+./gradlew :paper-1-21:runServer
 ```
 
 ## 📄 许可证

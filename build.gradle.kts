@@ -1,31 +1,20 @@
 plugins {
-    id("java-library")
-    alias(libs.plugins.run.paper)
+    alias(libs.plugins.run.paper) apply false
+    alias(libs.plugins.shadow) apply false
 }
 
-repositories {
-    mavenCentral()
-    maven("https://repo.papermc.io/repository/maven-public/")
-}
+allprojects {
+    group = "top.mahiro76"
+    version = "1.0-SNAPSHOT"
 
-dependencies {
-    compileOnly(libs.paper.api)
-}
-
-java {
-    toolchain.languageVersion = JavaLanguageVersion.of(17)
-}
-
-tasks {
-    runServer {
-        minecraftVersion(libs.versions.minecraft.get())
-        jvmArgs("-Xms2G", "-Xmx2G")
+    repositories {
+        mavenCentral()
+        maven("https://repo.papermc.io/repository/maven-public/")
     }
+}
 
-    processResources {
-        val props = mapOf("version" to version)
-        filesMatching("plugin.yml") {
-            expand(props)
-        }
+subprojects {
+    tasks.withType<JavaCompile>().configureEach {
+        options.encoding = "UTF-8"
     }
 }

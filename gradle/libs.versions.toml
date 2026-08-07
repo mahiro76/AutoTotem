@@ -1,11 +1,22 @@
 [versions]
-paper-api = "1.20.1-R0.1-SNAPSHOT"
-minecraft = "1.20.1"
+paperApi120 = "1.20.1-R0.1-SNAPSHOT"
+paperApi121 = "1.21.11-R0.1-SNAPSHOT"
+paperApi261 = "26.1.2.build.74-stable"
+paperApi262 = "26.2.build.105-stable"
+minecraft120 = "1.20.1"
+minecraft121 = "1.21.11"
+minecraft261 = "26.1.2"
+minecraft262 = "26.2"
 
 run-task = "3.0.2"
+shadow = "9.6.1"
 
 [libraries]
-paper-api = { module = "io.papermc.paper:paper-api", version.ref = "paper-api" }
+paperApi120 = { module = "io.papermc.paper:paper-api", version.ref = "paperApi120" }
+paperApi121 = { module = "io.papermc.paper:paper-api", version.ref = "paperApi121" }
+paperApi261 = { module = "io.papermc.paper:paper-api", version.ref = "paperApi261" }
+paperApi262 = { module = "io.papermc.paper:paper-api", version.ref = "paperApi262" }
 
 [plugins]
 run-paper = { id = "xyz.jpenilla.run-paper", version.ref = "run-task" }
+shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }

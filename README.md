@@ -60,15 +60,35 @@ We welcome localization contributions! If you want to add or improve a translati
 
 ## 🛠 Building
 
-Requires **JDK 17+** (JDK 21 recommended).
+The project is a multi-module build that produces a separate jar for each supported Minecraft version line:
+
+| Module | Target server | Jar |
+| --- | --- | --- |
+| `paper-1-20` | 1.20.1+ | `paper-1-20/build/libs/AutoTotem-1.20.jar` |
+| `paper-1-21` | 1.21.x | `paper-1-21/build/libs/AutoTotem-1.21.jar` |
+| `paper-26-1` | 26.1.x | `paper-26-1/build/libs/AutoTotem-26.1.jar` |
+| `paper-26-2` | 26.2.x | `paper-26-2/build/libs/AutoTotem-26.2.jar` |
+
+> Each version module builds against its own Paper API and declares the matching `api-version` in `plugin.yml`, so newer versions (1.20.5+, where `Particle.TOTEM` was renamed to `TOTEM_OF_UNDYING`) are handled correctly.
+
+Build requirements (per version module):
+
+- `paper-1-20`: **JDK 17**
+- `paper-1-21`: **JDK 21**
+- `paper-26-1` / `paper-26-2`: **JDK 25**
+
+Install the required JDKs and point Gradle at them via `org.gradle.java.installations.paths` in `gradle.properties` (semicolon-separated, forward slashes).
 
 ```bash
-# Build the plugin
+# Build all version jars
 ./gradlew build
 
-# Build output is located in build/libs/
-# Start a local Paper server for testing
-./gradlew runServer
+# Or build a single version (e.g. 1.21)
+./gradlew :paper-1-21:build
+
+# Build output is located in <module>/build/libs/
+# Start a local Paper server for testing (e.g. 1.21)
+./gradlew :paper-1-21:runServer
 ```
 
 ## 📄 License
