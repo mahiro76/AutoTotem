@@ -19,7 +19,7 @@
 
 ## 📥 安装
 
-1. 下载最新版本的 `AutoTotem-*.jar`
+1. 从[modrinth](https://modrinth.com/plugin/autototem-plugin)下载最新版本的 `AutoTotem-*.jar`
 2. 将 jar 文件放入服务器的 `plugins/` 目录
 3. 重启服务器（或使用插件管理器加载）
 4. 首次启动后会在 `plugins/AutoTotem/` 生成配置文件
