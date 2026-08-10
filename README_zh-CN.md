@@ -1,8 +1,10 @@
 # AutoTotem
 
-[![License: MIT-NC-ND-Source](https://img.shields.io/badge/License-MIT--NC--ND--Source-yellow)](LICENSE)
+[![License: MIT-NC-ND-Source](https://img.shields.io/badge/License-MIT--NC--ND--Source-yellow?style=flat-square)](LICENSE)
 
-**🌐 语言 / Language:** [English](README.md) · [简体中文](README_zh-CN.md)
+
+**🌐 Language:** [English](README.md) | [简体中文](README_zh-CN.md)
+
 
 一个基于 **Paper** 的 Minecraft 服务器插件，可以在玩家受到致命伤害时自动消耗背包中的不死图腾，避免死亡。单个 jar 即可适配 Minecraft **1.20.1 – 26.2**。
 
