@@ -1,8 +1,7 @@
 # AutoTotem
 
 
-[![license](https://img.shields.io/badge/license-Custom-34a853?style=flat-square)](https://github.com/mahiro76/AutoTotem/blob/master/LICENSE)
-
+[![License: MIT-NC-ND-Source](https://img.shields.io/badge/License-MIT--NC--ND--Source-yellow?style=flat-square)](LICENSE)
 
 **🌐 Language / 语言:** [English](README.md) · [简体中文](README_zh-CN.md)
 
