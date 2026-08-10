@@ -3,7 +3,8 @@
 
 [![License: MIT-NC-ND-Source](https://img.shields.io/badge/License-MIT--NC--ND--Source-yellow?style=flat-square)](LICENSE)
 
-**🌐 Language / 语言:** [English](README.md) · [简体中文](README_zh-CN.md)
+**🌐 Language:** [English](README.md) | [简体中文](README_zh-CN.md)
+
 
 A **Paper** Minecraft server plugin that automatically consumes totems of undying from your inventory when you take a fatal hit, saving you from death. Works on a single jar across Minecraft **1.20.1 – 26.2**.
 
