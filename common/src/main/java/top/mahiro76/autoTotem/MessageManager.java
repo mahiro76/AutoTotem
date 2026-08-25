@@ -1,5 +1,7 @@
 package top.mahiro76.autoTotem;
 
+import com.destroystokyo.paper.ClientOption;
+
 import org.bukkit.entity.Player;
 
 import java.io.File;
@@ -131,7 +133,7 @@ public final class MessageManager {
      * @return 格式化后的消息；键不存在时返回键名本身
      */
     public String getFor(Player player, String key, String... placeholders) {
-        return format(resolve(player.getLocale()), key, placeholders);
+        return format(resolve(player.getClientOption(ClientOption.LOCALE)), key, placeholders);
     }
 
     /**

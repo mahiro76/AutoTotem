@@ -51,6 +51,7 @@ public final class AutoTotem extends JavaPlugin {
      * </ol>
      */
     @Override
+    @SuppressWarnings("deprecation") // getDescription() 已弃用但跨版本稳定；getPluginMeta() 为实验性 API
     public void onEnable() {
         saveDefaultConfig();
         loadConfig();
